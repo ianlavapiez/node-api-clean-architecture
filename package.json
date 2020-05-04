@@ -6,6 +6,11 @@
   "scripts": {
     "test": "jest"
   },
+  "standard": {
+    "env": [
+      "jest"
+    ]
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ianlavapiez/node-api-clean-architecture.git"
@@ -23,5 +28,8 @@
     "lint-staged": "^10.2.2",
     "standard": "^14.3.3"
   },
-  "dependencies": {}
+  "dependencies": {
+    "express": "^4.17.1",
+    "mongoose": "^5.9.11"
+  }
 }
