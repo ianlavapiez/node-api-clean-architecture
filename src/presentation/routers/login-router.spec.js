@@ -24,7 +24,7 @@ describe('Login Router', () => {
     const systemUnitTest = new LoginRouter()
     const httpRequest = {
       body: {
-        email: 'any_email@gmail.com'
+        email: 'any_email_provided@gmail.com'
       }
     }
     const httpResponse = systemUnitTest.route(httpRequest)
