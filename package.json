@@ -6,6 +6,17 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "lint-staged": {
+    "*.js": [
+      "standard --fix",
+      "git add"
+    ]
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ianlavapiez/node-api-clean-architecture.git"
@@ -18,6 +29,9 @@
   },
   "homepage": "https://github.com/ianlavapiez/node-api-clean-architecture#readme",
   "devDependencies": {
+    "husky": "^4.2.5",
+    "lint-staged": "^10.2.2",
     "standard": "^14.3.3"
-  }
+  },
+  "dependencies": {}
 }
