@@ -98,7 +98,7 @@ describe('Login Router', () => {
   })
 
   test('should return 200 when valid credentials are provided', () => {
-    const { systemUnitTest } = makeSystemUnitTest()
+    const { systemUnitTest, authUseCaseSpy } = makeSystemUnitTest()
     const httpRequest = {
       body: {
         email: 'valid_email@gmail.com',
@@ -109,6 +109,7 @@ describe('Login Router', () => {
     const httpResponse = systemUnitTest.route(httpRequest)
 
     expect(httpResponse.statusCode).toBe(200)
+    expect(httpResponse.body.accessToken).toEqual(authUseCaseSpy.accessToken)
   })
 
   test('should return 500 if no AuthUseCase has provided', () => {
