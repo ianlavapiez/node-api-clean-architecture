@@ -22,6 +22,7 @@ const makeSystemUnitTest = () => {
 const makeEmailValidator = () => {
   class EmailValidatorSpy {
     isValid (email) {
+      this.email = email
       return this.isEmailValid
     }
   }
@@ -264,5 +265,19 @@ describe('Login Router', () => {
 
     expect(httpResponse.statusCode).toBe(500)
     expect(httpResponse.body).toEqual(new ServerError())
+  })
+
+  test('should call emailValidatorSpy with correct email', async () => {
+    const { systemUnitTest, emailValidatorSpy } = makeSystemUnitTest()
+    const httpRequest = {
+      body: {
+        email: 'any_email_provided@gmail.com',
+        password: 'any_password'
+      }
+    }
+
+    await systemUnitTest.route(httpRequest)
+
+    expect(emailValidatorSpy.email).toBe(httpRequest.body.email)
   })
 })
