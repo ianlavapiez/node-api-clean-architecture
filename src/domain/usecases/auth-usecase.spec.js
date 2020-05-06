@@ -95,6 +95,13 @@ describe('Auth UseCase', () => {
     expect(loadUserByEmailRepositorySpy.email).toBe('any_email@gmail.com')
   })
 
+  test('should throw if no dependency is provided', async () => {
+    const systemUnderTest = new AuthUseCase()
+    const promise = systemUnderTest.auth('any_email@gmail.com', 'any_password')
+
+    expect(promise).rejects.toThrow()
+  })
+
   test('should throw if no LoadUserByEmailRepository is provided', async () => {
     const systemUnderTest = new AuthUseCase({})
     const promise = systemUnderTest.auth('any_email@gmail.com', 'any_password')
