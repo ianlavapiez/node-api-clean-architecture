@@ -1,16 +1,24 @@
 const AuthUseCase = require('./auth-usecase')
 const { MissingParamError } = require('../../utils/errors')
 
-const makeSystemUnderTest = () => {
+const makeEncrypter = () => {
   class EncrypterSpy {
     async compare (password, hashedPassword) {
       this.password = password
       this.hashedPassword = hashedPassword
+
+      return this.isValid
     }
   }
 
   const encrypterSpy = new EncrypterSpy()
 
+  encrypterSpy.isValid = true
+
+  return encrypterSpy
+}
+
+const makeLoadUserByEmailRepositorySpy = () => {
   class LoadUserByEmailRepositorySpy {
     async load (email) {
       this.email = email
@@ -24,6 +32,13 @@ const makeSystemUnderTest = () => {
   loadUserByEmailRepositorySpy.user = {
     password: 'hashed_password'
   }
+
+  return loadUserByEmailRepositorySpy
+}
+
+const makeSystemUnderTest = () => {
+  const encrypterSpy = makeEncrypter()
+  const loadUserByEmailRepositorySpy = makeLoadUserByEmailRepositorySpy()
 
   const systemUnderTest = new AuthUseCase(loadUserByEmailRepositorySpy, encrypterSpy)
 
@@ -82,7 +97,10 @@ describe('Auth UseCase', () => {
   })
 
   test('should return null if an invalid email is provided', async () => {
-    const { systemUnderTest } = makeSystemUnderTest()
+    const { systemUnderTest, encrypterSpy } = makeSystemUnderTest()
+
+    encrypterSpy.isValid = false
+
     const accessToken = await systemUnderTest.auth('valid_email@gmail.com', 'invalid_password')
 
     expect(accessToken).toBeNull()
