@@ -58,7 +58,11 @@ const makeSystemUnderTest = () => {
   const loadUserByEmailRepositorySpy = makeLoadUserByEmailRepositorySpy()
   const tokenGeneratorSpy = makeTokenGenerator()
 
-  const systemUnderTest = new AuthUseCase(loadUserByEmailRepositorySpy, encrypterSpy, tokenGeneratorSpy)
+  const systemUnderTest = new AuthUseCase({
+    loadUserByEmailRepository: loadUserByEmailRepositorySpy,
+    encrypter: encrypterSpy,
+    tokenGenerator: tokenGeneratorSpy
+  })
 
   return {
     systemUnderTest,
@@ -92,14 +96,14 @@ describe('Auth UseCase', () => {
   })
 
   test('should throw if no LoadUserByEmailRepository is provided', async () => {
-    const systemUnderTest = new AuthUseCase()
+    const systemUnderTest = new AuthUseCase({})
     const promise = systemUnderTest.auth('any_email@gmail.com', 'any_password')
 
     expect(promise).rejects.toThrow()
   })
 
   test('should throw if LoadUserByEmailRepository has no load method', async () => {
-    const systemUnderTest = new AuthUseCase({})
+    const systemUnderTest = new AuthUseCase({ loadUserByEmailRepository: {} })
     const promise = systemUnderTest.auth('any_email@gmail.com', 'any_password')
 
     expect(promise).rejects.toThrow()
