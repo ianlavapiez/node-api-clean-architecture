@@ -1,6 +1,7 @@
 const bcrypt = require('bcrypt')
 
 const Encrypter = require('./encrypter')
+const MissingParamError = require('./errors/missing-param-error')
 
 const makeSystemUnderTest = () => {
   return new Encrypter()
@@ -31,5 +32,12 @@ describe('Encrypter', () => {
 
     expect(bcrypt.value).toBe('any_value')
     expect(bcrypt.hash).toBe('hashed_value')
+  })
+
+  test('should throw if no params are provided', async () => {
+    const systemUnderTest = makeSystemUnderTest()
+
+    expect(systemUnderTest.compare()).rejects.toThrow(new MissingParamError('value'))
+    expect(systemUnderTest.compare('any_value')).rejects.toThrow(new MissingParamError('hash'))
   })
 })
