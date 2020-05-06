@@ -4,8 +4,8 @@
   "description": "A node express application built with the use of Uncle Bob's clean architecture.",
   "main": "index.js",
   "scripts": {
-    "test": "jest --watchAll",
-    "test:staged": "jest --passWithNoTests"
+    "test": "jest --watchAll --silent --colors --noStackTrace",
+    "test:staged": "jest --passWithNoTests --findRelatedTests --silent"
   },
   "standard": {
     "env": [
