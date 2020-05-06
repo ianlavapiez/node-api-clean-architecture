@@ -1,7 +1,7 @@
 const LoginRouter = require('./login-router')
 const { MissingParamError, InvalidParamError, UnauthorizedError, ServerError } = require('../errors')
 
-const makeSystemUnitTest = () => {
+const makeSystemUnderTest = () => {
   const authUseCaseSpy = makeAuthUseCase()
   const emailValidatorSpy = makeEmailValidator()
 
@@ -66,7 +66,7 @@ const makeAuthUseCaseWithError = () => {
 
 describe('Login Router', () => {
   test('should return 400 if no email has provided', async () => {
-    const { systemUnitTest } = makeSystemUnitTest()
+    const { systemUnitTest } = makeSystemUnderTest()
     const httpRequest = {
       body: {
         password: 'any_password'
@@ -79,7 +79,7 @@ describe('Login Router', () => {
   })
 
   test('should return 400 if no password has provided', async () => {
-    const { systemUnitTest } = makeSystemUnitTest()
+    const { systemUnitTest } = makeSystemUnderTest()
     const httpRequest = {
       body: {
         email: 'any_email_provided@gmail.com'
@@ -92,7 +92,7 @@ describe('Login Router', () => {
   })
 
   test('should return 500 if no httpRequest has provided', async () => {
-    const { systemUnitTest } = makeSystemUnitTest()
+    const { systemUnitTest } = makeSystemUnderTest()
     const httpResponse = await systemUnitTest.route()
 
     expect(httpResponse.statusCode).toBe(500)
@@ -100,7 +100,7 @@ describe('Login Router', () => {
   })
 
   test('should return 500 if no httpRequest has no body', async () => {
-    const { systemUnitTest } = makeSystemUnitTest()
+    const { systemUnitTest } = makeSystemUnderTest()
     const httpResponse = await systemUnitTest.route()
 
     expect(httpResponse.statusCode).toBe(500)
@@ -108,7 +108,7 @@ describe('Login Router', () => {
   })
 
   test('should call authUseCaseSpy with correct params', async () => {
-    const { systemUnitTest, authUseCaseSpy } = makeSystemUnitTest()
+    const { systemUnitTest, authUseCaseSpy } = makeSystemUnderTest()
     const httpRequest = {
       body: {
         email: 'any_email_provided@gmail.com',
@@ -122,7 +122,7 @@ describe('Login Router', () => {
   })
 
   test('should return 401 when invalid credentials are provided', async () => {
-    const { systemUnitTest, authUseCaseSpy } = makeSystemUnitTest()
+    const { systemUnitTest, authUseCaseSpy } = makeSystemUnderTest()
 
     authUseCaseSpy.accessToken = null
 
@@ -140,7 +140,7 @@ describe('Login Router', () => {
   })
 
   test('should return 200 when valid credentials are provided', async () => {
-    const { systemUnitTest, authUseCaseSpy } = makeSystemUnitTest()
+    const { systemUnitTest, authUseCaseSpy } = makeSystemUnderTest()
     const httpRequest = {
       body: {
         email: 'valid_email@gmail.com',
@@ -201,7 +201,7 @@ describe('Login Router', () => {
   })
 
   test('should return 400 if an invalid email is provided', async () => {
-    const { systemUnitTest, emailValidatorSpy } = makeSystemUnitTest()
+    const { systemUnitTest, emailValidatorSpy } = makeSystemUnderTest()
 
     emailValidatorSpy.isEmailValid = false
 
@@ -265,7 +265,7 @@ describe('Login Router', () => {
   })
 
   test('should call emailValidatorSpy with correct email', async () => {
-    const { systemUnitTest, emailValidatorSpy } = makeSystemUnitTest()
+    const { systemUnitTest, emailValidatorSpy } = makeSystemUnderTest()
     const httpRequest = {
       body: {
         email: 'any_email_provided@gmail.com',
