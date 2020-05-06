@@ -7,7 +7,7 @@ class AuthUseCase {
 }
 
 describe('Auth UseCase', () => {
-  test('should throw if no email is provided', async () => {
+  test('should throws if no email is provided', async () => {
     const systemUnderTest = new AuthUseCase()
     const promise = await systemUnderTest.auth()
 
