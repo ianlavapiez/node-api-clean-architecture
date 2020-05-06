@@ -139,4 +139,12 @@ describe('Auth UseCase', () => {
 
     expect(tokenGeneratorSpy.userId).toBe(loadUserByEmailRepositorySpy.user.id)
   })
+
+  test('should return an accessToken if correct credentials are provided', async () => {
+    const { systemUnderTest, tokenGeneratorSpy } = makeSystemUnderTest()
+    const accessToken = await systemUnderTest.auth('valid_email@gmail.com', 'valid_password')
+
+    expect(accessToken).toBe(tokenGeneratorSpy.accessToken)
+    expect(accessToken).toBeTruthy()
+  })
 })
