@@ -17,30 +17,40 @@ class AuthUseCase {
   }
 }
 
+const makeSystemUnderTest = () => {
+  class LoadUserByEmailRepositorySpy {
+    async load (email) {
+      this.email = email
+    }
+  }
+
+  const loadUserByEmailRepositorySpy = new LoadUserByEmailRepositorySpy()
+  const systemUnderTest = new AuthUseCase(loadUserByEmailRepositorySpy)
+
+  return {
+    systemUnderTest,
+    loadUserByEmailRepositorySpy
+  }
+}
+
 describe('Auth UseCase', () => {
   test('should throw if no email is provided', async () => {
-    const systemUnderTest = new AuthUseCase()
+    const { systemUnderTest } = makeSystemUnderTest()
     const promise = systemUnderTest.auth()
 
     expect(promise).rejects.toThrow(new MissingParamError('email'))
   })
 
   test('should throw if no password is provided', async () => {
-    const systemUnderTest = new AuthUseCase()
+    const { systemUnderTest } = makeSystemUnderTest()
     const promise = systemUnderTest.auth('any_email@gmail.com')
 
     expect(promise).rejects.toThrow(new MissingParamError('password'))
   })
 
   test('should  call LoadUserByEmailRepository with correct email', async () => {
-    class LoadUserByEmailRepositorySpy {
-      async load (email) {
-        this.email = email
-      }
-    }
+    const { systemUnderTest, loadUserByEmailRepositorySpy } = makeSystemUnderTest()
 
-    const loadUserByEmailRepositorySpy = new LoadUserByEmailRepositorySpy()
-    const systemUnderTest = new AuthUseCase(loadUserByEmailRepositorySpy)
     systemUnderTest.auth('any_email@gmail.com', 'any_password')
 
     expect(loadUserByEmailRepositorySpy.email).toBe('any_email@gmail.com')
