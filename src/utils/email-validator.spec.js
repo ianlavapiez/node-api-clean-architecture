@@ -1,6 +1,7 @@
 const validator = require('validator')
 
 const EmailValidator = require('./email-validator')
+const MissingParamError = require('./errors/missing-param-error')
 
 const makeSystemUnderTest = () => {
   return new EmailValidator()
@@ -28,5 +29,11 @@ describe('Email Validator', () => {
     systemUnitTest.isValid('any_email@email.com')
 
     expect(validator.email).toBe('any_email@email.com')
+  })
+
+  test('should throw if no email is provided', async () => {
+    const systemUnderTest = makeSystemUnderTest()
+
+    expect(() => { systemUnderTest.isValid() }).toThrow(new MissingParamError('email'))
   })
 })
