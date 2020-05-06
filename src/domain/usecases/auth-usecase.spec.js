@@ -34,7 +34,7 @@ const makeTokenGenerator = () => {
   return tokenGeneratorSpy
 }
 
-const makeLoadUserByEmailRepositorySpy = () => {
+const makeLoadUserByEmailRepository = () => {
   class LoadUserByEmailRepositorySpy {
     async load (email) {
       this.email = email
@@ -55,7 +55,7 @@ const makeLoadUserByEmailRepositorySpy = () => {
 
 const makeSystemUnderTest = () => {
   const encrypterSpy = makeEncrypter()
-  const loadUserByEmailRepositorySpy = makeLoadUserByEmailRepositorySpy()
+  const loadUserByEmailRepositorySpy = makeLoadUserByEmailRepository()
   const tokenGeneratorSpy = makeTokenGenerator()
 
   const systemUnderTest = new AuthUseCase({
@@ -93,27 +93,6 @@ describe('Auth UseCase', () => {
     systemUnderTest.auth('any_email@gmail.com', 'any_password')
 
     expect(loadUserByEmailRepositorySpy.email).toBe('any_email@gmail.com')
-  })
-
-  test('should throw if no dependency is provided', async () => {
-    const systemUnderTest = new AuthUseCase()
-    const promise = systemUnderTest.auth('any_email@gmail.com', 'any_password')
-
-    expect(promise).rejects.toThrow()
-  })
-
-  test('should throw if no LoadUserByEmailRepository is provided', async () => {
-    const systemUnderTest = new AuthUseCase({})
-    const promise = systemUnderTest.auth('any_email@gmail.com', 'any_password')
-
-    expect(promise).rejects.toThrow()
-  })
-
-  test('should throw if LoadUserByEmailRepository has no load method', async () => {
-    const systemUnderTest = new AuthUseCase({ loadUserByEmailRepository: {} })
-    const promise = systemUnderTest.auth('any_email@gmail.com', 'any_password')
-
-    expect(promise).rejects.toThrow()
   })
 
   test('should return null if an invalid email is provided', async () => {
@@ -157,5 +136,40 @@ describe('Auth UseCase', () => {
 
     expect(accessToken).toBe(tokenGeneratorSpy.accessToken)
     expect(accessToken).toBeTruthy()
+  })
+
+  test('should throw if invalid dependency are provided', async () => {
+    const invalid = {}
+    const loadUserByEmailRepository = makeLoadUserByEmailRepository()
+    const encrypter = makeEncrypter()
+    const systemUnderTests = [].concat(
+      new AuthUseCase(),
+      new AuthUseCase({}),
+      new AuthUseCase({
+        loadUserByEmailRepository: invalid
+      }),
+      new AuthUseCase({
+        loadUserByEmailRepository
+      }),
+      new AuthUseCase({
+        loadUserByEmailRepository,
+        encrypter: invalid
+      }),
+      new AuthUseCase({
+        loadUserByEmailRepository,
+        encrypter
+      }),
+      new AuthUseCase({
+        loadUserByEmailRepository,
+        encrypter,
+        tokenGenerator: invalid
+      })
+    )
+
+    for (const systemUnderTest of systemUnderTests) {
+      const promise = systemUnderTest.auth('any_email@gmail.com', 'any_password')
+
+      expect(promise).rejects.toThrow()
+    }
   })
 })
