@@ -5,10 +5,15 @@ const makeSystemUnderTest = () => {
   class LoadUserByEmailRepositorySpy {
     async load (email) {
       this.email = email
+
+      return this.user
     }
   }
 
   const loadUserByEmailRepositorySpy = new LoadUserByEmailRepositorySpy()
+
+  loadUserByEmailRepositorySpy.user = {}
+
   const systemUnderTest = new AuthUseCase(loadUserByEmailRepositorySpy)
 
   return {
@@ -54,9 +59,19 @@ describe('Auth UseCase', () => {
     expect(promise).rejects.toThrow()
   })
 
-  test('should return null if LoadUserByEmailRepository returns null', async () => {
-    const { systemUnderTest } = makeSystemUnderTest()
+  test('should return null if an invalid email is provided', async () => {
+    const { systemUnderTest, loadUserByEmailRepositorySpy } = makeSystemUnderTest()
+
+    loadUserByEmailRepositorySpy.user = null
+
     const accessToken = await systemUnderTest.auth('invalid_email@gmail.com', 'any_password')
+
+    expect(accessToken).toBeNull()
+  })
+
+  test('should return null if an invalid email is provided', async () => {
+    const { systemUnderTest } = makeSystemUnderTest()
+    const accessToken = await systemUnderTest.auth('valid_email@gmail.com', 'invalid_password')
 
     expect(accessToken).toBeNull()
   })
