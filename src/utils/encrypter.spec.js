@@ -7,16 +7,20 @@ class Encrypter {
   }
 }
 
+const makeSystemUnderTest = () => {
+  return new Encrypter()
+}
+
 describe('Encrypter', () => {
   test('should return true if bcrypt returns true', async () => {
-    const systemUnderTest = new Encrypter()
+    const systemUnderTest = makeSystemUnderTest()
     const isValid = await systemUnderTest.compare('any_value', 'hashed_value')
 
     expect(isValid).toBe(true)
   })
 
   test('should return false if bcrypt returns false', async () => {
-    const systemUnderTest = new Encrypter()
+    const systemUnderTest = makeSystemUnderTest()
 
     bcrypt.isValid = false
 
@@ -26,7 +30,7 @@ describe('Encrypter', () => {
   })
 
   test('should call bcrypt with correct values', async () => {
-    const systemUnderTest = new Encrypter()
+    const systemUnderTest = makeSystemUnderTest()
 
     await systemUnderTest.compare('any_value', 'hashed_value')
 
