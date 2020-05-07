@@ -1,21 +1,19 @@
-const systemUnderTest = require('./mongo-helper')
+const sut = require('./mongo-helper')
 
 describe('Mongo Helper', () => {
   beforeAll(async () => {
-    await systemUnderTest.connect(process.env.MONGO_URL)
+    await sut.connect(process.env.MONGO_URL)
   })
 
   afterAll(async () => {
-    await systemUnderTest.disconnect()
+    await sut.disconnect()
   })
 
-  test('should reconnect when getDb is invoked and client is disconnected', async () => {
-    expect(systemUnderTest.db).toBeTruthy()
-
-    await systemUnderTest.disconnect()
-    expect(systemUnderTest.db).toBeFalsy()
-
-    await systemUnderTest.getDb()
-    expect(systemUnderTest.db).toBeTruthy()
+  test('Should reconnect when getCollection() is invoked and client is disconnected', async () => {
+    expect(sut.db).toBeTruthy()
+    await sut.disconnect()
+    expect(sut.db).toBeFalsy()
+    await sut.getCollection('users')
+    expect(sut.db).toBeTruthy()
   })
 })

@@ -1,8 +1,8 @@
 const HttpResponse = require('../helpers/http-response')
-const { InvalidParamError, MissingParamError } = require('../../utils/errors')
+const { MissingParamError, InvalidParamError } = require('../../utils/errors')
 
 module.exports = class LoginRouter {
-  constructor (authUseCase, emailValidator) {
+  constructor ({ authUseCase, emailValidator } = {}) {
     this.authUseCase = authUseCase
     this.emailValidator = emailValidator
   }
@@ -25,11 +25,12 @@ module.exports = class LoginRouter {
 
       const accessToken = await this.authUseCase.auth(email, password)
 
-      if (!accessToken) return HttpResponse.unauthorizedError()
+      if (!accessToken) {
+        return HttpResponse.unauthorizedError()
+      }
 
       return HttpResponse.ok({ accessToken })
     } catch (error) {
-      console.error(error)
       return HttpResponse.serverError()
     }
   }
