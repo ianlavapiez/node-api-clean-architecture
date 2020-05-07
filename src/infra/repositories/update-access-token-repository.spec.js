@@ -18,6 +18,16 @@ class UpdateAccessTokenRepository {
   }
 }
 
+const makeSystemUnderTest = () => {
+  const userModel = db.collection('users')
+  const systemUnderTest = new UpdateAccessTokenRepository(userModel)
+
+  return {
+    userModel,
+    systemUnderTest
+  }
+}
+
 describe('UpdateAccessToken Repository', () => {
   beforeAll(async () => {
     await MongoHelper.connect(process.env.MONGO_URL)
@@ -33,8 +43,7 @@ describe('UpdateAccessToken Repository', () => {
   })
 
   test('should update the user with the given accessToken', async () => {
-    const userModel = db.collection('users')
-    const systemUnderTest = new UpdateAccessTokenRepository(userModel)
+    const { systemUnderTest, userModel } = makeSystemUnderTest()
     const fakeUser = await userModel.insertOne({
       email: 'valid_email@gmail.com',
       name: 'any_name',
