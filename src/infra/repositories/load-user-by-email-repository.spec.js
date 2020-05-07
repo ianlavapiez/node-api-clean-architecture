@@ -1,8 +1,8 @@
-const { MongoClient } = require('mongodb')
-
+const MongoHelper = require('../helpers/mongo-helper')
 const LoadUserByEmailRepository = require('./load-user-by-email-repository')
+const MissingParamError = require('../../utils/errors/missing-param-error')
 
-let client, db
+let db
 
 const makeSystemUnderTest = () => {
   const userModel = db.collection('users')
@@ -16,12 +16,8 @@ const makeSystemUnderTest = () => {
 
 describe('LoadUserByEmail Repository', () => {
   beforeAll(async () => {
-    client = await MongoClient.connect(process.env.MONGO_URL, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true
-    })
-
-    db = client.db()
+    await MongoHelper.connect(process.env.MONGO_URL)
+    db = await MongoHelper.getDb()
   })
 
   beforeEach(async () => {
@@ -29,7 +25,7 @@ describe('LoadUserByEmail Repository', () => {
   })
 
   afterAll(async () => {
-    await client.close()
+    await MongoHelper.disconnect()
   })
 
   test('should return null if no user is found', async () => {
@@ -47,7 +43,7 @@ describe('LoadUserByEmail Repository', () => {
       name: 'any_name',
       age: 50,
       state: 'any_state',
-      password: 'any_password'
+      password: 'hashed_password'
     })
 
     const user = await systemUnderTest.load('valid_email@gmail.com')
@@ -56,5 +52,19 @@ describe('LoadUserByEmail Repository', () => {
       _id: fakeUser.ops[0]._id,
       password: fakeUser.ops[0].password
     })
+  })
+
+  test('should throw if no userModel is provided', async () => {
+    const systemUnderTest = new LoadUserByEmailRepository()
+    const promise = systemUnderTest.load('any_email@gmail.com')
+
+    expect(promise).rejects.toThrow()
+  })
+
+  test('should throw if no email is provided', async () => {
+    const { systemUnderTest } = makeSystemUnderTest()
+    const promise = systemUnderTest.load()
+
+    expect(promise).rejects.toThrow(new MissingParamError('email'))
   })
 })
